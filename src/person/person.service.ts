@@ -1,29 +1,40 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { PersonInput } from "./person.entity";
+import { CreatePersonDto } from "./person.entity";
 import { Person, PersonDocument } from "./person.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { isPersonEntityValid } from "./person.validator"
+import { isPersonEntityValid } from "./person.validator";
+import { SessionsService } from "../session/sessions.service";
+import { UpsertSessionDto } from "../session/upsert-session.dto";
 
 @Injectable()
 export class PersonService {
-  constructor(@InjectModel(Person.name) private personDocumentModel: Model<PersonDocument>) {
+  constructor(@InjectModel(Person.name) private personDocumentModel: Model<PersonDocument>,
+              private sessionService: SessionsService) {
   }
 
-  async createNewPersonEntity(person: PersonInput): Promise<Person>{
-    const newPersonModel:Person ={
-      firstName: person.name.first,
-      lastName: person.name.last,
-      rating: person.rating,
-      ratedAt: new Date(person.ratedAt),
+  async createNewPersonEntity(personDto: CreatePersonDto): Promise<Person> {
+    const newPersonModel: Person = {
+      firstName: personDto.name.first,
+      lastName: personDto.name.last,
+      rating: personDto.rating,
+      ratedAt: new Date(personDto.ratedAt)
     };
 
-    if(!isPersonEntityValid(newPersonModel)){
+    if (!isPersonEntityValid(newPersonModel)) {
       throw new BadRequestException(`Person not valid: ${newPersonModel}`);
     }
 
     const createdPerson = new this.personDocumentModel(newPersonModel);
-    return await createdPerson.save();
+    const savedPerson = await createdPerson.save();
+
+    const upsertSessionDto: UpsertSessionDto = {
+      ratedUsers: [savedPerson.id],
+      browserId: personDto.browserId
+    };
+
+    await this.sessionService.upsertSession(upsertSessionDto);
+    return savedPerson;
   }
 
   async findAll(): Promise<Person[]> {

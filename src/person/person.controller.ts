@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post } from "@nestjs/common";
-import { PersonInput } from "./person.entity";
+import { CreatePersonDto } from "./person.entity";
 import { PersonService } from "./person.service";
 import { Person } from "./person.schema";
 
@@ -12,8 +12,8 @@ export class PersonController {
   }
 
   @Post()
-  async savePerson(@Body() person: PersonInput): Promise<Person> {
-    return await this.personService.createNewPersonEntity(person);
+  async savePerson(@Body() input: CreatePersonDto): Promise<Person> {
+    return await this.personService.createNewPersonEntity(input);
   }
 
   @Get()
