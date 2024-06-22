@@ -3,6 +3,7 @@ import { PersonInput } from "./person.entity";
 import { Person, PersonDocument } from "./person.schema";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { isPersonEntityValid } from "./person.validator"
 
 @Injectable()
 export class PersonService {
@@ -17,7 +18,7 @@ export class PersonService {
       ratedAt: new Date(person.ratedAt),
     };
 
-    if(!this.isPersonEntityValid(newPersonModel)){
+    if(!isPersonEntityValid(newPersonModel)){
       throw new BadRequestException(`Person not valid: ${newPersonModel}`);
     }
 
@@ -25,15 +26,11 @@ export class PersonService {
     return await createdPerson.save();
   }
 
-  isPersonEntityValid(person: Person): boolean{
-    if (typeof person.firstName !== 'string' || typeof person.lastName !== 'string') {
-      return false;
-    }
+  async findAll(): Promise<Person[]> {
+    return await this.personDocumentModel.find().exec();
+  }
 
-    if (typeof person.rating !== 'number' || person.rating < 0 || person.rating > 100) {
-      return false;
-    }
-
-    return !(!(person.ratedAt instanceof Date) || isNaN(person.ratedAt.getTime()));
+  async findOne(id: string): Promise<Person> {
+    return await this.personDocumentModel.findById(id).exec();
   }
 }
