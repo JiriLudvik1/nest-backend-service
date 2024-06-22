@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { CreatePersonDto } from "./person.entity";
 import { Person, PersonDocument } from "./person.schema";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model, ObjectId, Types } from "mongoose";
+import { Model, Types } from "mongoose";
 import { isPersonEntityValid } from "./person.validator";
 import { SessionsService } from "../session/sessions.service";
 import { UpsertSessionDto } from "../session/upsert-session.dto";
@@ -46,6 +46,6 @@ export class PersonService {
   }
 
   async findMany(ids: Types.ObjectId[]): Promise<Person[]>{
-    return await this.personDocumentModel.find(ids).exec();
+    return await this.personDocumentModel.find({_id: {$in: ids}}).exec();
   }
 }

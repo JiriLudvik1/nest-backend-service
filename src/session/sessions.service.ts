@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Session, SessionDocument } from "./session.schema";
 import { Model } from "mongoose";
@@ -9,6 +9,7 @@ import { calculateSessionStatistics, SessionsStatisticsResult } from "./session-
 @Injectable()
 export class SessionsService {
   constructor(@InjectModel(Session.name) private sessionModel: Model<SessionDocument>,
+              @Inject(forwardRef(() => PersonService))
               private personService: PersonService) {
   }
 
