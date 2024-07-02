@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { ConfigService } from "@nestjs/config";
-import * as console from "node:console";
+import { Readable } from "stream";
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class SessionImageService {
@@ -20,18 +21,33 @@ export class SessionImageService {
   }
 
   async uploadImage(file: Express.Multer.File): Promise<string> {
-    console.log(this.configService.get<string>("MINIO_ENDPOINT"));
-    console.log(this.configService.get<string>("MINIO_REGION"));
-
+    const fileName = this.createFileName();
     const uploadParams = {
       Bucket: this.configService.get<string>("MINIO_SESSION_IMAGE_BUCKET"),
-      Key: file.originalname,
+      Key: fileName,
       Body: file.buffer,
       ContentType: file.mimetype
     }
 
     const command = new PutObjectCommand(uploadParams);
-    const uploadResult = await this.s3Client.send(command);
-    return uploadResult.ETag;
+    await this.s3Client.send(command);
+    return fileName;
+  }
+
+  async getImageFile(fileName: string): Promise<Readable>{
+    const downloadParams ={
+      Bucket: this.configService.get<string>("MINIO_SESSION_IMAGE_BUCKET"),
+      Key: fileName,
+    }
+
+    const downloadCommand = new GetObjectCommand(downloadParams);
+    const data = await this.s3Client.send(downloadCommand);
+    return data.Body as Readable
+  }
+
+  private createFileName(): string{
+    const timestamp = Date.now().toString();
+    const uuid = uuidv4()
+    return `${timestamp}-${uuid}`;
   }
 }

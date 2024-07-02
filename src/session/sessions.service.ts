@@ -39,8 +39,8 @@ export class SessionsService {
     return calculateSessionStatistics(session, ratedUsers);
   }
 
-  async addSessionImage(session: Session, imageEtag: string): Promise<void> {
-    return this.sessionModel.findOneAndUpdate(session, { imageEtag: imageEtag })
+  async addSessionImage(session: Session, imageStorageFileName: string): Promise<void> {
+    return this.sessionModel.findOneAndUpdate(session, { imageStorageFileName: imageStorageFileName })
   }
 
   async findByBrowserId(browserId: string): Promise<Session | null> {

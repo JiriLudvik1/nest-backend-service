@@ -12,7 +12,7 @@ export class Session{
   browserId: string
 
   @Prop({ type: String, required: false })
-  imageEtag?: string
+  imageStorageFileName?: string
 
   @Prop([{type: Types.ObjectId, ref: "Person"}])
   ratedUsers: Types.ObjectId[];
