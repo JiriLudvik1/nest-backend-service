@@ -11,6 +11,9 @@ export class Session{
   @Prop({type: String, required: true})
   browserId: string
 
+  @Prop({ type: String, required: false })
+  imageEtag?: string
+
   @Prop([{type: Types.ObjectId, ref: "Person"}])
   ratedUsers: Types.ObjectId[];
 }

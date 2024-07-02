@@ -19,7 +19,7 @@ export class SessionImageService {
     })
   }
 
-  async uploadImage(file: Express.Multer.File): Promise<any> {
+  async uploadImage(file: Express.Multer.File): Promise<string> {
     console.log(this.configService.get<string>("MINIO_ENDPOINT"));
     console.log(this.configService.get<string>("MINIO_REGION"));
 
@@ -31,6 +31,7 @@ export class SessionImageService {
     }
 
     const command = new PutObjectCommand(uploadParams);
-    return await this.s3Client.send(command);
+    const uploadResult = await this.s3Client.send(command);
+    return uploadResult.ETag;
   }
 }

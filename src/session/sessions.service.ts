@@ -39,7 +39,11 @@ export class SessionsService {
     return calculateSessionStatistics(session, ratedUsers);
   }
 
-  private async findByBrowserId(browserId: string): Promise<Session | null> {
+  async addSessionImage(session: Session, imageEtag: string): Promise<void> {
+    return this.sessionModel.findOneAndUpdate(session, { imageEtag: imageEtag })
+  }
+
+  async findByBrowserId(browserId: string): Promise<Session | null> {
     return await this.sessionModel.findOne({ browserId }).exec();
   }
 }

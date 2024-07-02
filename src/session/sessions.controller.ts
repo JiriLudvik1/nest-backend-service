@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Controller, Get, Param, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { SessionsService } from "./sessions.service";
 import { SessionsStatisticsResult } from "./session-statistics-calculator";
 import { FileInterceptor } from "@nestjs/platform-express";
@@ -14,9 +14,15 @@ export class SessionsController {
     return await this.sessionService.getSessionStatistics(browserId);
   }
 
-  @Post("/image")
+  @Post("/image/:browserId")
   @UseInterceptors(FileInterceptor('image'))
-  async uploadImage(@UploadedFile() file: Express.Multer.File): Promise<void> {
-    return await this.sessionImageService.uploadImage(file)
+  async uploadImage(@UploadedFile() file: Express.Multer.File, @Param('browserId') browserId: string): Promise<void> {
+    const session= await this.sessionService.findByBrowserId(browserId)
+    if (session === null){
+      throw new BadRequestException("Session was not found by browserId")
+    }
+
+    const uploadedImageEtag = await this.sessionImageService.uploadImage(file)
+    return await this.sessionService.addSessionImage(session, uploadedImageEtag)
   }
 }
