@@ -5,6 +5,7 @@ import { SessionsService } from "./sessions.service";
 import { Person, PersonSchema } from "../person/person.schema";
 import { PersonService } from "../person/person.service";
 import { SessionsController } from "./sessions.controller";
+import { SessionImageService } from "./session-image.service";
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { SessionsController } from "./sessions.controller";
     MongooseModule.forFeature([{ name: Person.name, schema: PersonSchema }]),
   ],
   controllers: [SessionsController],
-  providers:[SessionsService, PersonService]
+  providers:[SessionsService, PersonService, SessionImageService]
 })
 export class SessionModule {}
