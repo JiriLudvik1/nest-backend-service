@@ -9,6 +9,7 @@ import { SessionImageService } from "./session-image.service";
 import { ManagementController } from "./management/rmq-management.controller";
 import { RMQModule } from "nestjs-rmq";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { SessionImageCleanupService } from "./management/session-image-cleanup.service";
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
   providers: [
     SessionsService,
     PersonService,
-    SessionImageService]
+    SessionImageService,
+    SessionImageCleanupService]
 })
 export class SessionModule {
 }
