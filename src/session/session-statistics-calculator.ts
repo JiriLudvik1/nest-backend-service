@@ -1,4 +1,4 @@
-import { Session } from "./session.schema";
+import { Session } from "./models/session.schema";
 import { Person } from "../person/person.schema";
 
 export function calculateSessionStatistics(session: Session, ratedUsers: Person[]): SessionsStatisticsResult{

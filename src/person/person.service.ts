@@ -5,7 +5,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { isPersonEntityValid } from "./person.validator";
 import { SessionsService } from "../session/sessions.service";
-import { UpsertSessionDto } from "../session/upsert-session.dto";
+import { UpsertSessionDto } from "../session/models/upsert-session.dto";
 
 @Injectable()
 export class PersonService {

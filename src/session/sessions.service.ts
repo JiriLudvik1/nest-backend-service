@@ -1,8 +1,8 @@
 import { forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Session, SessionDocument } from "./session.schema";
+import { Session, SessionDocument } from "./models/session.schema";
 import { Model } from "mongoose";
-import { UpsertSessionDto } from "./upsert-session.dto";
+import { UpsertSessionDto } from "./models/upsert-session.dto";
 import { PersonService } from "../person/person.service";
 import { calculateSessionStatistics, SessionsStatisticsResult } from "./session-statistics-calculator";
 
