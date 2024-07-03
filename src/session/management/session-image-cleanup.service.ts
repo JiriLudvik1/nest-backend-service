@@ -28,29 +28,36 @@ export class SessionImageCleanupService {
     const [allStorageFileNames, allUsedImageFileNames] = await Promise.all([allStorageFilesPromise, allUsedImageFileNamesPromise]);
     const unusedFiles = allStorageFileNames.filter(file => !allUsedImageFileNames.includes(file));
     if (unusedFiles.length === 0){
-      return {
+      const emptyDeleteResult:DeleteImageFilesResponse = {
         deletedFilesCount: 0,
         deletedTimestamp: new Date()
       }
+
+      await this.saveImageCleanupResult(imageCleanupRequest, emptyDeleteResult);
+      return emptyDeleteResult;
     }
 
     const deleteImagesResult = await this.sessionImageService.deleteImageFiles(unusedFiles);
-    const newImageCleanupModel: ImageCleanup ={
+    await this.saveImageCleanupResult(imageCleanupRequest, deleteImagesResult);
+
+    return {
+      deletedFilesCount: deleteImagesResult.deletedFilesCount,
+      deletedTimestamp: new Date()
+    }
+  }
+
+  private async saveImageCleanupResult(imageCleanupRequest: ImageCleanupRequest, deleteImagesResult: DeleteImageFilesResponse) {
+    const newImageCleanupModel: ImageCleanup = {
       requestId: imageCleanupRequest.requestId,
       manualRequest: imageCleanupRequest.manualRequest,
       filesDeleted: deleteImagesResult.deletedFilesCount,
       requestedBy: imageCleanupRequest.requestedBy,
       requestTimestamp: new Date(imageCleanupRequest.timestamp), // Pičovina jak zvon, oprav to
       requestFinished: deleteImagesResult.deletedTimestamp
-    }
+    };
 
     const newImageCleanup = new this.imageCleanupModel(newImageCleanupModel);
     await newImageCleanup.save();
-
-    return {
-      deletedFilesCount: deleteImagesResult.deletedFilesCount,
-      deletedTimestamp: new Date()
-    }
   }
 
   async getAllUsedImageFileNames(): Promise<string[]> {
