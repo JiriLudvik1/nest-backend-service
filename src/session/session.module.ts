@@ -10,11 +10,13 @@ import { ManagementController } from "./management/rmq-management.controller";
 import { RMQModule } from "nestjs-rmq";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { SessionImageCleanupService } from "./management/session-image-cleanup.service";
+import { ImageCleanup, ImageCleanupSchema } from "./models/image-cleanup.schema";
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: "Session", schema: SessionSchema }]),
     MongooseModule.forFeature([{ name: Person.name, schema: PersonSchema }]),
+    MongooseModule.forFeature([{name: ImageCleanup.name, schema: ImageCleanupSchema }]),
     RMQModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
